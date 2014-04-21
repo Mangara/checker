@@ -1,0 +1,7 @@
+syntax: glob
+build/
+nbproject/genfiles.properties
+nbproject/private/
+nbproject/build-impl.xml
+dist/
+desktop.ini
