@@ -39,7 +39,7 @@ public class StudentSecurityManager extends SecurityManager {
             "suppressAccessChecks", "accessClassInPackage.sun.util.resources",
             "accessClassInPackage.sun.reflect", "accessClassInPackage.sun.awt.resources",
             "stopThread", "accessClassInPackage.sun.text.resources.en",
-            "accessClassInPackage.sun.util.resources.en"
+            "accessClassInPackage.sun.util.resources.en", "getProtectionDomain"
     ));
     private Set<String> accessibleLibraries = new HashSet<String>(Arrays.asList(
             "net", "nio", "awt", "fontmanager"
