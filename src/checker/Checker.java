@@ -147,7 +147,8 @@ public class Checker {
     }
 
     /**
-     * Lets the checker know that a security breach has taken place.
+     * Informs the checker that a security breach has taken place.
+     * @param message
      */
     public void securityBreach(String message) {
         err.println("Security error: " + message);
