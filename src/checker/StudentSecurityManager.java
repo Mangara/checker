@@ -31,8 +31,19 @@ import java.util.Set;
  */
 public class StudentSecurityManager extends SecurityManager {
 
-    private Set<String> allowedActions = new HashSet<String>(Arrays.asList("control", "shutdownHooks", "javax.accessibility.assistive_technologies", "getenv.DISPLAY", "getProperty.networkaddress.cache.ttl", "getProperty.networkaddress.cache.negative.ttl", "accessDeclaredMembers", "specifyStreamHandler", "accessClassInPackage.sun.text.resources", "suppressAccessChecks", "accessClassInPackage.sun.util.resources", "accessClassInPackage.sun.reflect", "accessClassInPackage.sun.awt.resources", "stopThread"));
-    private Set<String> accessibleLibraries = new HashSet<String>(Arrays.asList("net", "nio", "awt", "fontmanager"));
+    private Set<String> allowedActions = new HashSet<String>(Arrays.asList(
+            "control", "shutdownHooks", "javax.accessibility.assistive_technologies",
+            "getenv.DISPLAY", "getProperty.networkaddress.cache.ttl",
+            "getProperty.networkaddress.cache.negative.ttl", "accessDeclaredMembers",
+            "specifyStreamHandler", "accessClassInPackage.sun.text.resources",
+            "suppressAccessChecks", "accessClassInPackage.sun.util.resources",
+            "accessClassInPackage.sun.reflect", "accessClassInPackage.sun.awt.resources",
+            "stopThread", "accessClassInPackage.sun.text.resources.en",
+            "accessClassInPackage.sun.util.resources.en"
+    ));
+    private Set<String> accessibleLibraries = new HashSet<String>(Arrays.asList(
+            "net", "nio", "awt", "fontmanager"
+    ));
     private int validExit = ((new Random()).nextInt(240) + 5);
     private String inputDirectory;
     private String outputDirectory;
