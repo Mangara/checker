@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public class StudentSecurityManager extends SecurityManager {
 
-    private Set<String> allowedActions = new HashSet<String>(Arrays.asList(
+    private final Set<String> allowedActions = new HashSet<>(Arrays.asList(
             "control", "shutdownHooks", "javax.accessibility.assistive_technologies",
             "getenv.DISPLAY", "getProperty.networkaddress.cache.ttl",
             "getProperty.networkaddress.cache.negative.ttl", "accessDeclaredMembers",
@@ -41,14 +41,14 @@ public class StudentSecurityManager extends SecurityManager {
             "stopThread", "accessClassInPackage.sun.text.resources.en",
             "accessClassInPackage.sun.util.resources.en", "getProtectionDomain"
     ));
-    private Set<String> accessibleLibraries = new HashSet<String>(Arrays.asList(
+    private final Set<String> accessibleLibraries = new HashSet<>(Arrays.asList(
             "net", "nio", "awt", "fontmanager"
     ));
-    private int validExit = ((new Random()).nextInt(240) + 5);
-    private String inputDirectory;
-    private String outputDirectory;
-    private String sourceDirectory;
-    private Checker checker;
+    private final int validExit = ((new Random()).nextInt(240) + 5);
+    private final String inputDirectory;
+    private final String outputDirectory;
+    private final String sourceDirectory;
+    private final Checker checker;
 
     public StudentSecurityManager(Checker checker) {
         this.inputDirectory = checker.getInputDirectory().getPath();
@@ -153,13 +153,6 @@ public class StudentSecurityManager extends SecurityManager {
     }
 
     @Override
-    public void checkAwtEventQueueAccess() {
-        SecurityException se = new SecurityException("checkAwtEventQueueAccess");
-        checker.securityBreach(se.getMessage());
-        throw se;
-    }
-
-    @Override
     public void checkConnect(String host, int port) {
         SecurityException se = new SecurityException("checkConnect: host=" + host + " port=" + port);
         checker.securityBreach(se.getMessage());
@@ -256,20 +249,6 @@ public class StudentSecurityManager extends SecurityManager {
     @Override
     public void checkSetFactory() {
         SecurityException se = new SecurityException("checkSetFactory");
-        checker.securityBreach(se.getMessage());
-        throw se;
-    }
-
-    @Override
-    public void checkSystemClipboardAccess() {
-        SecurityException se = new SecurityException("checkSystemClipboardAccess");
-        checker.securityBreach(se.getMessage());
-        throw se;
-    }
-
-    @Override
-    public boolean checkTopLevelWindow(Object window) {
-        SecurityException se = new SecurityException("checkTopLevelWindow: window=" + window);
         checker.securityBreach(se.getMessage());
         throw se;
     }
