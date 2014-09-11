@@ -32,4 +32,9 @@ public class TestResult {
     public TestResult(int score, int maxScore, String comment) {
         this(score, maxScore, comment, null);
     }
+
+    @Override
+    public String toString() {
+        return score + "/" + maxScore + ": " + comment + (details == null ? "" : " (" + details + ")");
+    }
 }
