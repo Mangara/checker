@@ -52,12 +52,16 @@ public class Checker {
     }
 
     public void runTest(Test test) {
+        runTest(test, timePerTest);
+    }
+
+    public void runTest(Test test, int timeForThisTest) {
         clearOutput();
 
         out.println("Testing " + test.getName() + ".");
         err.println("Testing " + test.getName() + ".");
 
-        TestResult result = test.run(timePerTest, this);
+        TestResult result = test.run(timeForThisTest, this);
 
         mark += result.score;
         maxMark += result.maxScore;
