@@ -48,12 +48,14 @@ public class StudentSecurityManager extends SecurityManager {
     private final String inputDirectory;
     private final String outputDirectory;
     private final String sourceDirectory;
+    private final String testDirectory;
     private final Checker checker;
 
     public StudentSecurityManager(Checker checker) {
         this.inputDirectory = checker.getInputDirectory().getPath();
         this.outputDirectory = checker.getOutputDirectory().getPath();
         this.sourceDirectory = checker.getSourceDirectory().getPath();
+        this.testDirectory = checker.getTestDirectory().toString();
         this.checker = checker;
     }
 
@@ -114,7 +116,7 @@ public class StudentSecurityManager extends SecurityManager {
         }
 
         // Allow reading from the input, source and output directories
-        if (file.startsWith(inputDirectory) || file.startsWith(outputDirectory) || file.startsWith(sourceDirectory)) {
+        if (file.startsWith(inputDirectory) || file.startsWith(outputDirectory) || file.startsWith(sourceDirectory) || file.startsWith(testDirectory)) {
             // allow
             return;
         }
