@@ -19,12 +19,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.file.Path;
 
 public class Checker {
 
     private File inputDirectory;
     private File outputDirectory;
     private File sourceDirectory;
+    private final Path testDirectory;
     private PrintStream out = null; // System.out
     private PrintStream err = null; // System.err
     private int timePerTest;
@@ -33,10 +35,11 @@ public class Checker {
     private boolean securityBreached = false;
     private final StringBuilder output;
 
-    public Checker(File inputDirectory, File outputDirectory, File sourceDirectory, int timePerTest) {
+    public Checker(File inputDirectory, File outputDirectory, File sourceDirectory, Path testDirectory, int timePerTest) {
         this.inputDirectory = inputDirectory;
         this.outputDirectory = outputDirectory;
         this.sourceDirectory = sourceDirectory;
+        this.testDirectory = testDirectory;
         this.timePerTest = timePerTest;
         output = new StringBuilder();
     }
@@ -173,5 +176,9 @@ public class Checker {
 
     public File getSourceDirectory() {
         return sourceDirectory;
+    }
+
+    public Path getTestDirectory() {
+        return testDirectory;
     }
 }
