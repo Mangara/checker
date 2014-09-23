@@ -23,23 +23,19 @@ import java.nio.file.Path;
 
 public class Checker {
 
-    private File inputDirectory;
-    private File outputDirectory;
-    private File sourceDirectory;
-    private final Path testDirectory;
+    private final Iterable<Path> readDirectories;
+    private final Iterable<Path> writeDirectories;
     private PrintStream out = null; // System.out
     private PrintStream err = null; // System.err
-    private int timePerTest;
+    private final int timePerTest;
     private int mark;
     private int maxMark;
     private boolean securityBreached = false;
     private final StringBuilder output;
 
-    public Checker(File inputDirectory, File outputDirectory, File sourceDirectory, Path testDirectory, int timePerTest) {
-        this.inputDirectory = inputDirectory;
-        this.outputDirectory = outputDirectory;
-        this.sourceDirectory = sourceDirectory;
-        this.testDirectory = testDirectory;
+    public Checker(Iterable<Path> readDirectories, Iterable<Path> writeDirectories, int timePerTest) {
+        this.readDirectories = readDirectories;
+        this.writeDirectories = writeDirectories;
         this.timePerTest = timePerTest;
         output = new StringBuilder();
     }
@@ -170,19 +166,11 @@ public class Checker {
         return out;
     }
 
-    public File getInputDirectory() {
-        return inputDirectory;
+    public Iterable<Path> getReadDirectories() {
+        return readDirectories;
     }
 
-    public File getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    public File getSourceDirectory() {
-        return sourceDirectory;
-    }
-
-    public Path getTestDirectory() {
-        return testDirectory;
+    public Iterable<Path> getWriteDirectories() {
+        return writeDirectories;
     }
 }

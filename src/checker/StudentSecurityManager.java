@@ -18,6 +18,7 @@ package checker;
 import java.io.FileDescriptor;
 import java.io.FilePermission;
 import java.net.InetAddress;
+import java.nio.file.Path;
 import java.security.AccessControlException;
 import java.security.Permission;
 import java.util.Arrays;
@@ -46,17 +47,9 @@ public class StudentSecurityManager extends SecurityManager {
             "net", "nio", "awt", "fontmanager"
     ));
     private final int validExit = ((new Random()).nextInt(240) + 5);
-    private final String inputDirectory;
-    private final String outputDirectory;
-    private final String sourceDirectory;
-    private final String testDirectory;
     private final Checker checker;
 
     public StudentSecurityManager(Checker checker) {
-        this.inputDirectory = checker.getInputDirectory().getPath();
-        this.outputDirectory = checker.getOutputDirectory().getPath();
-        this.sourceDirectory = checker.getSourceDirectory().getPath();
-        this.testDirectory = checker.getTestDirectory().toString();
         this.checker = checker;
     }
 
@@ -116,10 +109,12 @@ public class StudentSecurityManager extends SecurityManager {
             return;
         }
 
-        // Allow reading from the input, source and output directories
-        if (file.startsWith(inputDirectory) || file.startsWith(outputDirectory) || file.startsWith(sourceDirectory) || file.startsWith(testDirectory)) {
-            // allow
-            return;
+        // Allow reading from the readable directories
+        for (Path dir : checker.getReadDirectories()) {
+            if (file.startsWith(dir.toString())) {
+                // allow
+                return;
+            }
         }
 
         // Don't allow access to any other part of the system
@@ -130,10 +125,12 @@ public class StudentSecurityManager extends SecurityManager {
 
     @Override
     public void checkWrite(String file) {
-        // Only allow writing to files in the output directory
-        if (file.startsWith(outputDirectory)) {
-            // allow
-            return;
+        // Allow writing to files in the writable directories
+        for (Path dir : checker.getReadDirectories()) {
+            if (file.startsWith(dir.toString())) {
+                // allow
+                return;
+            }
         }
 
         // Don't allow access to any other part of the system
