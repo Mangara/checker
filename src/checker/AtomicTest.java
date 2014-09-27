@@ -21,7 +21,7 @@ import java.io.Writer;
 
 public abstract class AtomicTest extends Test {
 
-    private int marks;
+    private final int marks;
     
     public AtomicTest(String name, int marks) {
         super(name);
