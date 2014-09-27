@@ -17,7 +17,7 @@ package checker;
 
 public abstract class Test {
 
-    private String name;
+    private final String name;
 
     public Test(String name) {
         this.name = name;
