@@ -88,6 +88,10 @@ public class Checker {
         out.printf("Tests complete. Total mark: %d/%d.%n", mark, maxMark);
         err.printf("Tests complete. Total mark: %d/%d.%n", mark, maxMark);
 
+        exit();
+    }
+
+    public void exit() {
         ((StudentSecurityManager) System.getSecurityManager()).exit();
     }
 
