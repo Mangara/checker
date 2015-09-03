@@ -126,7 +126,7 @@ public class StudentSecurityManager extends SecurityManager {
     @Override
     public void checkWrite(String file) {
         // Allow writing to files in the writable directories
-        for (Path dir : checker.getReadDirectories()) {
+        for (Path dir : checker.getWriteDirectories()) {
             if (file.startsWith(dir.toString())) {
                 // allow
                 return;
