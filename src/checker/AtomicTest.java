@@ -79,7 +79,7 @@ public abstract class AtomicTest extends Test {
     class RunnableTest implements Runnable {
 
         private TestResult result = fail(String.format("Test for %s did not finish.", AtomicTest.this.getName()));
-        private Checker checker;
+        private final Checker checker;
 
         RunnableTest(Checker checker) {
             this.checker = checker;
@@ -91,6 +91,11 @@ public abstract class AtomicTest extends Test {
 
         @Override
         public void run() {
+            // Don't allow student code to do anything harmful
+            StudentSecurityManager.SharedSecret secret = new StudentSecurityManager.SharedSecret();
+            StudentSecurityManager sm = new StudentSecurityManager(checker, secret);
+            System.setSecurityManager(sm);
+
             try {
                 result = test(checker);
             } catch (CorrectnessException e) {
@@ -108,6 +113,9 @@ public abstract class AtomicTest extends Test {
                 e.printStackTrace(new PrintWriter(stackTrace));
                 result = fail(String.format("Exception for %s: %s", AtomicTest.this.getName(), e.toString()), stackTrace.toString());
             }
+
+            // Revert to full permissions for the checker
+            sm.disable(secret);
         }
     }
 }
