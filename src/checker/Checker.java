@@ -147,9 +147,6 @@ public class Checker {
         });
 
         System.setErr(limitedStdErr);
-
-        // Don't allow student code to do anything harmful
-        System.setSecurityManager(new StudentSecurityManager(this));
     }
 
     /**

@@ -48,9 +48,26 @@ public class StudentSecurityManager extends SecurityManager {
     ));
     private final int validExit = ((new Random()).nextInt(240) + 5);
     private final Checker checker;
+    private final int secretHash; // The "password" to disable the security manager
 
-    public StudentSecurityManager(Checker checker) {
+    public StudentSecurityManager(Checker checker, SharedSecret secret) {
         this.checker = checker;
+        secretHash = secret.hashCode();
+    }
+
+    /**
+     * Disables the security manager.
+     *
+     * @param secret the key that was used when creating this SecurityManager
+     */
+    void disable(SharedSecret secret) {
+        if (secret != null && secretHash == secret.hashCode()) {
+            System.setSecurityManager(null);
+        } else {
+            SecurityException se = new SecurityException("Attempt to disable the security manager.");
+            checker.securityBreach(se.getMessage());
+            throw se;
+        }
     }
 
     /**
@@ -84,6 +101,15 @@ public class StudentSecurityManager extends SecurityManager {
             }
             if (fp.getActions().contains("execute")) {
                 checkExec(fp.getName());
+            }
+        } else if ("setSecurityManager".equals(perm.getName())) {
+            // Only allow this to be called directly by us
+            Class[] stack = getClassContext();
+
+            if (stack[1] != System.class || stack[2] != System.class || stack[3] != StudentSecurityManager.class) {
+                SecurityException se = new SecurityException("checkPermission: perm=" + perm.toString() + " name=" + perm.getName());
+                checker.securityBreach(se.getMessage());
+                throw se;
             }
         } else if (!allowedActions.contains(perm.getName())) {
             SecurityException se = new SecurityException("checkPermission: perm=" + perm.toString() + " name=" + perm.getName());
@@ -261,5 +287,9 @@ public class StudentSecurityManager extends SecurityManager {
     }
 
     static class ExitTrappedException extends SecurityException {
+    }
+
+    public final static class SharedSecret {
+        // This cannot be extended or overridden to change the hashCode implementation
     }
 }
