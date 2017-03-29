@@ -22,7 +22,7 @@ import java.io.Writer;
 public abstract class AtomicTest extends Test {
 
     private final int marks;
-    
+
     public AtomicTest(String name, int marks) {
         super(name);
         this.marks = marks;
@@ -54,6 +54,10 @@ public abstract class AtomicTest extends Test {
             } catch (InterruptedException ex) {
             }
 
+            if (System.getSecurityManager() != null) {
+                ((StudentSecurityManager) System.getSecurityManager()).disable(test.secret);
+            }
+
             return fail(String.format("Time limit (%.0fs) exceeded for %s.", timePerTest / 1000.0, getName()));
         } else {
             checker.getErr().printf("Test for %s took %f seconds.%n", getName(), (System.currentTimeMillis() - start) / 1000.0);
@@ -80,6 +84,7 @@ public abstract class AtomicTest extends Test {
 
         private TestResult result = fail(String.format("Test for %s did not finish.", AtomicTest.this.getName()));
         private final Checker checker;
+        private final StudentSecurityManager.SharedSecret secret = new StudentSecurityManager.SharedSecret();
 
         RunnableTest(Checker checker) {
             this.checker = checker;
@@ -92,7 +97,6 @@ public abstract class AtomicTest extends Test {
         @Override
         public void run() {
             // Don't allow student code to do anything harmful
-            StudentSecurityManager.SharedSecret secret = new StudentSecurityManager.SharedSecret();
             StudentSecurityManager sm = new StudentSecurityManager(checker, secret);
             System.setSecurityManager(sm);
 
@@ -104,11 +108,11 @@ public abstract class AtomicTest extends Test {
                 result = fail(String.format("Test for %s ran out of memory.", AtomicTest.this.getName()));
             } catch (StudentSecurityManager.ExitTrappedException e) {
                 result = fail(String.format("Test for %s was stopped prematurely. Do not call System.exit().", AtomicTest.this.getName()));
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 if (e instanceof SecurityException) {
                     checker.securityBreach(e.getMessage());
                 }
-                
+
                 Writer stackTrace = new StringWriter();
                 e.printStackTrace(new PrintWriter(stackTrace));
                 result = fail(String.format("Exception for %s: %s", AtomicTest.this.getName(), e.toString()), stackTrace.toString());
