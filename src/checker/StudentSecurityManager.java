@@ -50,7 +50,7 @@ public class StudentSecurityManager extends SecurityManager {
     private final Checker checker;
     private final int secretHash; // The "password" to disable the security manager
 
-    public StudentSecurityManager(Checker checker, SharedSecret secret) {
+    StudentSecurityManager(Checker checker, SharedSecret secret) {
         this.checker = checker;
         secretHash = secret.hashCode();
     }
@@ -64,9 +64,7 @@ public class StudentSecurityManager extends SecurityManager {
         if (secret != null && secretHash == secret.hashCode()) {
             System.setSecurityManager(null);
         } else {
-            SecurityException se = new SecurityException("Attempt to disable the security manager.");
-            checker.securityBreach(se.getMessage());
-            throw se;
+            reportException(new SecurityException("Attempt to disable the security manager."));
         }
     }
 
@@ -107,23 +105,17 @@ public class StudentSecurityManager extends SecurityManager {
             Class[] stack = getClassContext();
 
             if (stack[1] != System.class || stack[2] != System.class || stack[3] != StudentSecurityManager.class) {
-                SecurityException se = new SecurityException("checkPermission: perm=" + perm.toString() + " name=" + perm.getName());
-                checker.securityBreach(se.getMessage());
-                throw se;
+                reportException(new SecurityException("checkPermission: perm=" + perm.toString() + " name=" + perm.getName()));
             }
         } else if (!allowedActions.contains(perm.getName())) {
-            SecurityException se = new SecurityException("checkPermission: perm=" + perm.toString() + " name=" + perm.getName());
-            checker.securityBreach(se.getMessage());
-            throw se;
+            reportException(new SecurityException("checkPermission: perm=" + perm.toString() + " name=" + perm.getName()));
         }
     }
 
     @Override
     public void checkDelete(String file) {
         // Don't allow deletion of any files
-        AccessControlException se = new AccessControlException("Deletion of file \"" + file + "\" denied.");
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new AccessControlException("Deletion of file \"" + file + "\" denied."));
     }
 
     @Override
@@ -144,9 +136,7 @@ public class StudentSecurityManager extends SecurityManager {
         }
 
         // Don't allow access to any other part of the system
-        AccessControlException se = new AccessControlException("Read access to file \"" + file + "\" denied.");
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new AccessControlException("Read access to file \"" + file + "\" denied."));
     }
 
     @Override
@@ -160,9 +150,7 @@ public class StudentSecurityManager extends SecurityManager {
         }
 
         // Don't allow access to any other part of the system
-        AccessControlException se = new AccessControlException("Write access to file \"" + file + "\" denied.");
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new AccessControlException("Write access to file \"" + file + "\" denied."));
     }
 
     @Override
@@ -173,23 +161,17 @@ public class StudentSecurityManager extends SecurityManager {
 
     @Override
     public void checkAccept(String host, int port) {
-        SecurityException se = new SecurityException("checkAccept: host=" + host + " port=" + port);
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkAccept: host=" + host + " port=" + port));
     }
 
     @Override
     public void checkConnect(String host, int port) {
-        SecurityException se = new SecurityException("checkConnect: host=" + host + " port=" + port);
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkConnect: host=" + host + " port=" + port));
     }
 
     @Override
     public void checkConnect(String host, int port, Object context) {
-        SecurityException se = new SecurityException("checkConnect: host=" + host + " port=" + port + " context=" + context);
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkConnect: host=" + host + " port=" + port + " context=" + context));
     }
 
     @Override
@@ -199,9 +181,7 @@ public class StudentSecurityManager extends SecurityManager {
 
     @Override
     public void checkExec(String cmd) {
-        SecurityException se = new SecurityException("Execution of file or command \"" + cmd + "\" denied.");
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("Execution of file or command \"" + cmd + "\" denied."));
     }
 
     @Override
@@ -211,77 +191,60 @@ public class StudentSecurityManager extends SecurityManager {
             return;
         }
 
-        SecurityException se = new SecurityException("Access to library \"" + lib + "\" denied.");
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("Access to library \"" + lib + "\" denied."));
     }
 
     @Override
     public void checkListen(int port) {
-        SecurityException se = new SecurityException("checkListen: port=" + port);
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkListen: port=" + port));
     }
 
     @Override
     public void checkMulticast(InetAddress maddr) {
-        SecurityException se = new SecurityException("checkMulticast: maddr=" + maddr);
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkMulticast: maddr=" + maddr));
     }
 
     @Override
     public void checkPermission(Permission perm, Object context) {
-        SecurityException se = new SecurityException("checkPermission: perm=" + perm + " context=" + context);
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkPermission: perm=" + perm + " context=" + context));
     }
 
     @Override
     public void checkPrintJobAccess() {
-        SecurityException se = new SecurityException("checkPrintJobAccess");
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkPrintJobAccess"));
     }
 
     @Override
     public void checkPropertiesAccess() {
-        SecurityException se = new SecurityException("checkPropertiesAccess");
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkPropertiesAccess"));
     }
 
     @Override
     public void checkRead(FileDescriptor fd) {
-        SecurityException se = new SecurityException("checkRead: fd=" + fd);
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkRead: fd=" + fd));
     }
 
     @Override
     public void checkRead(String file, Object context) {
-        SecurityException se = new SecurityException("checkRead: file=" + file + " context=" + context);
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkRead: file=" + file + " context=" + context));
     }
 
     @Override
     public void checkSecurityAccess(String target) {
-        SecurityException se = new SecurityException("checkSecurityAccess: target=" + target);
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkSecurityAccess: target=" + target));
     }
 
     @Override
     public void checkSetFactory() {
-        SecurityException se = new SecurityException("checkSetFactory");
-        checker.securityBreach(se.getMessage());
-        throw se;
+        reportException(new SecurityException("checkSetFactory"));
     }
 
     @Override
     public void checkWrite(FileDescriptor fd) {
-        SecurityException se = new SecurityException("checkWrite: fd=" + fd);
+        reportException(new SecurityException("checkWrite: fd=" + fd));
+    }
+
+    private void reportException(SecurityException se) {
         checker.securityBreach(se.getMessage());
         throw se;
     }
@@ -289,7 +252,7 @@ public class StudentSecurityManager extends SecurityManager {
     static class ExitTrappedException extends SecurityException {
     }
 
-    public final static class SharedSecret {
+    final static class SharedSecret {
         // This cannot be extended or overridden to change the hashCode implementation
     }
 }
