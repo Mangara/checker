@@ -22,7 +22,10 @@ import java.nio.file.Path;
 import java.security.AccessControlException;
 import java.security.Permission;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -32,20 +35,14 @@ import java.util.Set;
  */
 public class StudentSecurityManager extends SecurityManager {
 
-    private final Set<String> allowedActions = new HashSet<>(Arrays.asList(
-            "control", "shutdownHooks", "javax.accessibility.assistive_technologies",
-            "getenv.DISPLAY", "getProperty.networkaddress.cache.ttl",
-            "getProperty.networkaddress.cache.negative.ttl", "accessDeclaredMembers",
-            "specifyStreamHandler", "accessClassInPackage.sun.text.resources",
-            "suppressAccessChecks", "accessClassInPackage.sun.util.resources",
-            "accessClassInPackage.sun.reflect", "accessClassInPackage.sun.awt.resources",
-            "stopThread", "accessClassInPackage.sun.text.resources.en",
-            "accessClassInPackage.sun.util.resources.en", "getProtectionDomain",
-            "user.timezone"
-    ));
-    private final Set<String> accessibleLibraries = new HashSet<>(Arrays.asList(
-            "net", "nio", "awt", "fontmanager"
-    ));
+    private final static Map<String, List<Class>> allowedActions = new HashMap<>();
+    private final Set<String> accessibleLibraries = new HashSet<>(Arrays.asList());
+
+    static {
+        allowedActions.put("setSecurityManager", Arrays.asList(System.class, System.class, StudentSecurityManager.class));
+        allowedActions.put("stopThread", Arrays.asList(Thread.class, AtomicTest.class));
+    }
+
     private final int validExit = ((new Random()).nextInt(240) + 5);
     private final Checker checker;
     private final int secretHash; // The "password" to disable the security manager
@@ -100,16 +97,23 @@ public class StudentSecurityManager extends SecurityManager {
             if (fp.getActions().contains("execute")) {
                 checkExec(fp.getName());
             }
-        } else if ("setSecurityManager".equals(perm.getName())) {
-            // Only allow this to be called directly by us
+
+            return;
+        } else if (allowedActions.containsKey(perm.getName())) {
+            List<Class> expectedStack = allowedActions.get(perm.getName());
             Class[] stack = getClassContext();
 
-            if (stack[1] != System.class || stack[2] != System.class || stack[3] != StudentSecurityManager.class) {
-                reportException(new SecurityException("checkPermission: perm=" + perm.toString() + " name=" + perm.getName()));
+            for (int i = 0; i < expectedStack.size(); i++) {
+                if (i + 1 >= stack.length || stack[i + 1] != expectedStack.get(i)) {
+                    reportException(new SecurityException("checkPermission: perm=" + perm.toString() + " name=" + perm.getName()));
+                }
             }
-        } else if (!allowedActions.contains(perm.getName())) {
-            reportException(new SecurityException("checkPermission: perm=" + perm.toString() + " name=" + perm.getName()));
+
+            // The caller is as we expect - allow
+            return;
         }
+
+        reportException(new SecurityException("checkPermission: perm=" + perm.toString() + " name=" + perm.getName()));
     }
 
     @Override
@@ -120,19 +124,18 @@ public class StudentSecurityManager extends SecurityManager {
 
     @Override
     public void checkRead(String file) {
-        // Allow Java to read all files that it needs to.
-        if (file.startsWith(System.getProperty("java.home"))
-                || file.endsWith(".class") || file.endsWith(".jar") || file.endsWith(".properties")) {
-            // allow
-            return;
-        }
-
         // Allow reading from the readable directories
         for (Path dir : checker.getReadDirectories()) {
             if (file.startsWith(dir.toString())) {
                 // allow
                 return;
             }
+        }
+
+        // Java files. The classloader looks in various places, but handles SecurityExceptions just fine.
+        if (file.endsWith(".class") || file.endsWith(".jar") || file.endsWith(".properties")) {
+            // Don't allow, but don't report either
+            throw new AccessControlException("Read access to file \"" + file + "\" denied.");
         }
 
         // Don't allow access to any other part of the system
@@ -176,7 +179,7 @@ public class StudentSecurityManager extends SecurityManager {
 
     @Override
     public void checkCreateClassLoader() {
-        // Allow the creation of a class loader
+        reportException(new SecurityException("checkCreateClassLoader"));
     }
 
     @Override
