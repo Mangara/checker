@@ -43,7 +43,6 @@ public class StudentSecurityManager extends SecurityManager {
         allowedActions.put("stopThread", Arrays.asList(Thread.class, AtomicTest.class));
     }
 
-    private final int validExit = ((new Random()).nextInt(240) + 5);
     private final Checker checker;
     private final int secretHash; // The "password" to disable the security manager
 
@@ -65,19 +64,9 @@ public class StudentSecurityManager extends SecurityManager {
         }
     }
 
-    /**
-     * Terminates the JVM. Package access only.
-     */
-    void exit() {
-        System.exit(validExit);
-    }
-
     @Override
     public void checkExit(int code) {
-        // Don't allow students to terminate the JVM
-        if (code != validExit) {
-            throw new ExitTrappedException();
-        }
+        throw new ExitTrappedException();
     }
 
     @Override
